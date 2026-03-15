@@ -11,6 +11,10 @@ jobs:
 
     steps:
 
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -19,17 +23,18 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # Create credentials file
-      - name: Setup YouTube credentials
         run: |
-          echo '${{ secrets.YOUTUBE_CLIENT_SECRET }}' > client_secret.json
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Setup YouTube credentials
+      - name: Setup YouTube credentials
+        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRET }}' > client_secret.json
 
       # Run the bot
       - name: Run Youtube Shorts Bot
-      env:
-    OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-    ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
-    YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-  run: python scripts/run_bot.py
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
+          YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
+        run: python scripts/run_bot.py
