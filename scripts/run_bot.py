@@ -6,27 +6,31 @@ from image_generator import generate_image
 from video_builder import build_video_ffmpeg
 from uploader import upload_video
 from PIL import Image
-from elevenlabs import generate, set_api_key
+from elevenlabs.client import ElevenLabs
 
 # --------------------------
 # Setup ElevenLabs API key
 # --------------------------
-set_api_key(os.getenv("ELEVENLABS_KEY"))
+client = ElevenLabs(
+    api_key=os.getenv("ELEVENLABS_KEY")
+)
 
 # --------------------------
 # Generate AI voice
 # --------------------------
 def generate_ai_voice(text, file_name):
-    """Generate MP3 narration for a given text using ElevenLabs."""
-    audio_bytes = generate(
-        text=text,
-        voice="alloy",
-        model="eleven_multilingual_v1"
-    )
-    with open(file_name, "wb") as f:
-        f.write(audio_bytes)
-    return file_name
 
+    audio = client.text_to_speech.convert(
+        voice_id="21m00Tcm4TlvDq8ikWAM",  # Default ElevenLabs voice
+        model_id="eleven_multilingual_v2",
+        text=text
+    )
+
+    with open(file_name, "wb") as f:
+        for chunk in audio:
+            f.write(chunk)
+
+    return file_name
 # --------------------------
 # Build video using FFmpeg
 # --------------------------
