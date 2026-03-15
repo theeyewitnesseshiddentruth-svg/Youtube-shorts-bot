@@ -5,7 +5,7 @@ import random
 # Set API key from environment
 openai.api_key = os.getenv("OPENAI_KEY")
 
-def generate_hooks(count=6):
+def hooks(count=6):
     """
     Generate 'count' viral hooks using OpenAI GPT
     """
@@ -51,7 +51,7 @@ Only return a number.
             score = 5
         scored.append((hook, score))
 
-    # Step 3: Select top hooks
+    # Step 3: Select top hooks and temporarily save to hooks.py 
     scored.sort(key=lambda x: x[1], reverse=True)
     best_hooks = [hook for hook, score in scored[:count]]
 
