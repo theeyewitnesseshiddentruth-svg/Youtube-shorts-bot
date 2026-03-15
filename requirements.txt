@@ -1,10 +1,8 @@
-openai
-moviepy
-requests
-python-dotenv
-google-api-python-client
-google-auth
-google-auth-oauthlib
-google-auth-httplib2
-elevenlabs
-Pillow                # for thumbnails
+openai==1.0.0
+moviepy==2.0.0
+gtts==2.3.2
+google-api-python-client==2.94.0
+python-dotenv==1.0.0
+requests==2.31.0
+Pillow==10.1.0
+elevenlabs==0.1.0
