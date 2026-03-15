@@ -2,15 +2,14 @@ name: Youtube Shorts Bot
 
 on:
   schedule:
-    - cron: "0 8 * * *"
-  workflow_dispatch:
+    - cron: "0 8 * * *"   # Runs every day at 8:00 UTC
+  workflow_dispatch:       # Allows manual run if needed
 
 jobs:
   generate_shorts:
     runs-on: ubuntu-latest
 
     steps:
-
       # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,11 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Setup YouTube credentials
-      - name: Setup YouTube credentials
-        run: echo '${{ secrets.YOUTUBE_CLIENT_SECRET }}' > client_secret.json
-
-      # Run the bot
+      # Run the bot with secrets
       - name: Run Youtube Shorts Bot
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
