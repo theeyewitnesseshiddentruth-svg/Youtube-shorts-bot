@@ -1,1 +1,6 @@
-
+openai
+moviepy
+gtts
+google-api-python-client
+python-dotenv
+requests
