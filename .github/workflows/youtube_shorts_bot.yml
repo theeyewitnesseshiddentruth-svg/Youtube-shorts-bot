@@ -1,34 +1,35 @@
 name: Youtube Shorts Bot
 
-# Run daily at 8 AM UTC
 on:
   schedule:
     - cron: "0 8 * * *"
-  workflow_dispatch:  # Optional: allows manual run
+  workflow_dispatch:
 
 jobs:
   generate_shorts:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
-      - uses: actions/checkout@v3
 
-      # 2️⃣ Setup Python
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
-      # 3️⃣ Install dependencies
+      # Install dependencies
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 4️⃣ Create YouTube OAuth credentials
-      - name: Setup YouTube Credentials
+      # Create credentials file
+      - name: Setup YouTube credentials
         run: |
           echo '${{ secrets.YOUTUBE_CLIENT_SECRET }}' > client_secret.json
 
-      # 5️⃣ Run the Shorts Bot
+      # Run the bot
       - name: Run Youtube Shorts Bot
         run: python scripts/run_bot.py
