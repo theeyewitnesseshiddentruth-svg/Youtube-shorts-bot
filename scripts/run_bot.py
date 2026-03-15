@@ -1,4 +1,5 @@
 import os
+import random
 from hooks import generate_hooks
 from scene_generator import generate_scenes
 from image_generator import generate_image
@@ -6,91 +7,93 @@ from video_builder import build_video
 from moviepy.editor import AudioFileClip, CompositeVideoClip, TextClip
 from elevenlabs import generate, set_api_key
 from uploader import upload_video
+from PIL import Image, ImageDraw, ImageFont
 
-# Set API key from GitHub secrets
+# --------------------------
+# API Keys
+# --------------------------
 set_api_key(os.getenv("ELEVENLABS_KEY"))
 
+# --------------------------
+# Generate AI voice
+# --------------------------
 def generate_ai_voice(text, file_name):
-    """
-    Generate MP3 narration for given text
-    """
     audio_bytes = generate(
         text=text,
-        voice="alloy",  # You can pick any ElevenLabs voice
+        voice="alloy",
         model="eleven_multilingual_v1"
     )
-
     with open(file_name, "wb") as f:
         f.write(audio_bytes)
-
     return file_name
 
 # --------------------------
-# Step 1: Generate top 6 hooks
+# Generate thumbnail
+# --------------------------
+def generate_thumbnail(title, file_name):
+    img = Image.new('RGB', (1280, 720), color=(20, 20, 20))
+    d = ImageDraw.Draw(img)
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    try:
+        font = ImageFont.truetype(font_path, 80)
+    except:
+        font = ImageFont.load_default()
+    d.text((50, 300), title, font=font, fill=(255, 255, 0))
+    img.save(file_name)
+    return file_name
+
+# --------------------------
+# Generate top 6 hooks
 # --------------------------
 hooks = generate_hooks(count=6)
 print("Selected hooks:", hooks)
 
 for i, hook in enumerate(hooks):
     print(f"\n--- Generating Short {i+1} ---")
-    
-    # --------------------------
-    # Step 2: Generate script
-    # --------------------------
-    # Here we just use hook as script for simplicity
-    script = hook + " - explained in short video format"
-    
-    # --------------------------
-    # Step 3: Generate scene prompts
-    # --------------------------
+
+    # Script (for simplicity we use hook as script)
+    script = f"{hook} - explained in short video format"
+
+    # Scene prompts
     scenes = generate_scenes(script)
     print("Scene prompts:", scenes)
-    
-    # --------------------------
-    # Step 4: Generate AI images for scenes
-    # --------------------------
+
+    # Generate AI images
     images = []
     for idx, scene in enumerate(scenes):
         img_path = generate_image(scene, idx)
         images.append(img_path)
-    
-    # --------------------------
-    # Step 5: Build video
-    # --------------------------
+
+    # Build video
     video_file = build_video(images)
-    
-    # --------------------------
-    # Step 6: Generate AI voice
-    # --------------------------
+
+    # Generate AI voice
     audio_file = f"output/voice_{i}.mp3"
-    voice_audio = generate_ai_voice(text=script, voice="alloy")
-    with open(audio_file, "wb") as f:
-        f.write(voice_audio)
-    
-    # --------------------------
-    # Step 7: Combine video + audio
-    # --------------------------
+    generate_ai_voice(script, audio_file)
+
+    # Combine video + audio
     video_clip = CompositeVideoClip([video_file])
     audio_clip = AudioFileClip(audio_file)
     final_video = video_clip.set_audio(audio_clip)
-    
+
+    # Add subtitles (simple on-screen text per scene)
+    subtitle_clips = []
+    for idx, img_path in enumerate(images):
+        txt_clip = TextClip(scenes[idx], fontsize=40, color='white', method='caption', size=(1280, 100))
+        txt_clip = txt_clip.set_start(idx*4).set_duration(4)
+        subtitle_clips.append(txt_clip)
+
+    final_video = CompositeVideoClip([final_video, *subtitle_clips])
+
+    # Write final video
     final_output = f"output/short_{i+1}.mp4"
-    # After building video and adding AI voice
-    video_file = final_output
+    final_video.write_videofile(final_output, fps=24)
 
-    upload_video(video_file, title=hook, description="AI Generated Shorts", tags=["shorts"])
+    # Generate thumbnail
+    thumbnail_file = f"output/thumbnail_{i+1}.png"
+    generate_thumbnail(hook, thumbnail_file)
 
-    # --------------------------
-    # Step 8: Add subtitles & thumbnail
-    # --------------------------
-    # (Optional: you can auto-generate subtitles using your AI or ElevenLabs script)
-    # (Optional: thumbnail generation can be added similarly)
+    # Upload to YouTube
+    upload_video(final_output, title=hook, description="AI Generated Shorts", tags=["shorts"])
 
-    # --------------------------
-    # Step 9: Upload to YouTube
-    # --------------------------
-    # Make sure YOUTUBE_KEY is set and uploader.py is ready
-    # from uploader import upload_video
-    # upload_video(final_output, title=hook)
-    
 print("\nAll 6 Shorts generated successfully!")
