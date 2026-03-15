@@ -31,7 +31,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg  # install FFmpeg
 
-      - name: Run Youtube Shorts Bot
+      - name: Run scripts/
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
