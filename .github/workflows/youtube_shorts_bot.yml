@@ -30,9 +30,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Open Youtube Shorts Bot
+      - name: Run Shorts Bot
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-        run: scripts/run_bot.py
+        run: |
+         python scripts/run_bot.py
