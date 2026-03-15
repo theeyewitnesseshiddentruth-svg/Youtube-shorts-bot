@@ -1,0 +1,17 @@
+youtube-shorts-bot
+│
+├── scripts
+│   ├── hooks.py             # Generate viral hook
+│   ├── script_writer.py     # AI script generation
+│   ├── voice.py             # AI TTS
+│   ├── video_builder.py     # Video builder
+│   ├── uploader.py          # YouTube upload
+│   └── run_bot.py           # Runs all steps
+│
+├── assets
+│   ├── videos/              # Stock clips
+│   └── music/               # Background music
+│
+├── output/                  # Final Shorts
+├── requirements.txt         # Python dependencies
+└── .github/workflows/shorts.yml  # Auto run workflow
