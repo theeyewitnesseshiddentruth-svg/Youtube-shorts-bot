@@ -17,6 +17,7 @@ set_api_key(os.getenv("ELEVENLABS_KEY"))
 # Generate AI voice
 # --------------------------
 def generate_ai_voice(text, file_name):
+    """Generate MP3 narration for given text using ElevenLabs."""
     audio_bytes = generate(
         text=text,
         voice="alloy",
@@ -25,6 +26,37 @@ def generate_ai_voice(text, file_name):
     with open(file_name, "wb") as f:
         f.write(audio_bytes)
     return file_name
+
+def build_video_ffmpeg(images, audio_file, output_file, duration_per_image=3):
+    """
+    Build video from images and audio using FFmpeg.
+    Each image lasts `duration_per_image` seconds.
+    """
+    # Create a temporary text file for FFmpeg image input
+    with open("temp_images.txt", "w") as f:
+        for img in images:
+            f.write(f"file '{os.path.abspath(img)}'\n")
+            f.write(f"duration {duration_per_image}\n")
+        # Repeat last image for proper ending
+        f.write(f"file '{os.path.abspath(images[-1])}'\n")
+
+    # FFmpeg command to create video from images
+    video_temp = "temp_video.mp4"
+    subprocess.run([
+        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", "temp_images.txt",
+        "-vsync", "vfr", "-pix_fmt", "yuv420p", video_temp
+    ], check=True)
+
+    # Merge audio with video
+    subprocess.run([
+        "ffmpeg", "-y", "-i", video_temp, "-i", audio_file,
+        "-c:v", "copy", "-c:a", "aac", "-shortest", output_file
+    ], check=True)
+
+    # Clean up temp files
+    os.remove(video_temp)
+    os.remove("temp_images.txt")
+    return output_file
 
 # --------------------------
 # Generate subtitles (SRT)
@@ -74,14 +106,16 @@ for i, hook in enumerate(hooks):
     print(f"\n--- Generating Short {i+1} ---")
     
     # Step 2: Generate script
-    script = hook + " - explained in short video format"
+    script = f"{hook} - explained in short video format"
     
     # Step 3: Generate scene prompts
     scenes = generate_scenes(script)
-    
+    print("Scene prompts:", scenes)
     # Step 4: Generate AI images for scenes
-    images = [generate_image(scene, idx) for idx, scene in enumerate(scenes)]
-    
+    images = []
+    for idx, scene in enumerate(scenes):
+        img_path = generate_image(scene, idx)
+        images.append(img_path)
     # Step 5: Generate AI voice
     audio_file = f"output/voice_{i}.mp3"
     generate_ai_voice(script, audio_file)
