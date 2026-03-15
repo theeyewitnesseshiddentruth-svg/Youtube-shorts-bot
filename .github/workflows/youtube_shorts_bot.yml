@@ -2,14 +2,13 @@ name: Youtube Shorts Bot
 
 on:
   schedule:
-    # Schedule 6 times per day (UTC)
     - cron: "0 6 * * *"
     - cron: "0 10 * * *"
     - cron: "0 14 * * *"
     - cron: "0 18 * * *"
     - cron: "0 22 * * *"
     - cron: "0 2 * * *"
-  workflow_dispatch: # manual trigger
+  workflow_dispatch:
 
 jobs:
   generate_shorts:
@@ -29,11 +28,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           sudo apt-get update
-          sudo apt-get install -y ffmpeg  # install FFmpeg
+          sudo apt-get install -y ffmpeg
 
-      - name: Run scripts/
+      - name: Run bot
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-        run: python run_bot.py
+        run: python scripts/run_bot.py
