@@ -1,19 +1,15 @@
 # OpenAI (for AI text/hooks if used)
-openai>=2.28.0
+openai
 
 # ElevenLabs for AI voice
-elevenlabs>=0.1.0
+elevenlabs
 
 # FFmpeg is called via subprocess, no Python package required
 # But image handling
-Pillow>=10.1.0
+Pillow
 
 # Google API & OAuth for YouTube upload
-google-api-python-client>=2.94.0
-google-auth>=2.49.1
-google-auth-oauthlib>=1.2.0
-google-auth-httplib2>=0.3.0
-
-# Utilities
-requests>=2.31.0
-python-dotenv>=1.0.0
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
