@@ -1,5 +1,6 @@
 import os
 import random
+import time
 from hooks import generate_hooks
 from scene_generator import generate_scenes
 from image_generator import generate_image
@@ -10,7 +11,7 @@ from uploader import upload_video
 from PIL import Image, ImageDraw, ImageFont
 
 # --------------------------
-# API Keys
+# Set API key
 # --------------------------
 set_api_key(os.getenv("ELEVENLABS_KEY"))
 
@@ -43,6 +44,13 @@ def generate_thumbnail(title, file_name):
     return file_name
 
 # --------------------------
+# Random delay for natural posting (0–10 minutes)
+# --------------------------
+delay_seconds = random.randint(0, 600)
+print(f"Delaying upload by {delay_seconds} seconds for natural posting...")
+time.sleep(delay_seconds)
+
+# --------------------------
 # Generate top 6 hooks
 # --------------------------
 hooks = generate_hooks(count=6)
@@ -51,7 +59,7 @@ print("Selected hooks:", hooks)
 for i, hook in enumerate(hooks):
     print(f"\n--- Generating Short {i+1} ---")
 
-    # Script (for simplicity we use hook as script)
+    # Script
     script = f"{hook} - explained in short video format"
 
     # Scene prompts
@@ -76,10 +84,16 @@ for i, hook in enumerate(hooks):
     audio_clip = AudioFileClip(audio_file)
     final_video = video_clip.set_audio(audio_clip)
 
-    # Add subtitles (simple on-screen text per scene)
+    # Add simple subtitles per scene
     subtitle_clips = []
-    for idx, img_path in enumerate(images):
-        txt_clip = TextClip(scenes[idx], fontsize=40, color='white', method='caption', size=(1280, 100))
+    for idx, scene in enumerate(scenes):
+        txt_clip = TextClip(
+            scene,
+            fontsize=40,
+            color='white',
+            method='caption',
+            size=(1280, 100)
+        )
         txt_clip = txt_clip.set_start(idx*4).set_duration(4)
         subtitle_clips.append(txt_clip)
 
