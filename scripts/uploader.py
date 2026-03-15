@@ -33,10 +33,13 @@ def get_authenticated_service():
     return build("youtube", "v3", credentials=credentials)
 
 
-def upload_video(file, title, description="Shorts Video", tags=["shorts"]):
+def upload_video(file_path, title, description="Shorts Video", tags=["shorts"]):
+    """
+    Upload video to YouTube using API key
+    """
+    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_KEY"))
 
-    youtube = get_authenticated_service()
-
+    media = MediaFileUpload(file_path, chunksize=-1, resumable=True)
     request = youtube.videos().insert(
         part="snippet,status",
         body={
@@ -46,13 +49,11 @@ def upload_video(file, title, description="Shorts Video", tags=["shorts"]):
                 "tags": tags,
                 "categoryId": "22"
             },
-            "status": {
-                "privacyStatus": "public"
-            }
+            "status": {"privacyStatus": "public"}
         },
-        media_body=MediaFileUpload(file)
+        media_body=media
     )
 
     response = request.execute()
-
-    print("Upload successful:", response["id"])
+    print(f"Uploaded video: {response['id']}")
+    return response["id"]
