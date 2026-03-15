@@ -1,29 +1,81 @@
+import os
 from hooks import generate_hooks
-from style_picker import pick_style_and_prompt
-from script_writer import generate_script
-from voice import create_voice
-from video_builder import build_ai_video
-from thumbnail import create_thumbnail
-from uploader import upload_video
+from scene_generator import generate_scenes
+from image_generator import generate_image
+from video_builder import build_video
+from elevenlabs import generate as generate_voice, set_api_key
+from moviepy.editor import AudioFileClip, CompositeVideoClip, TextClip
 
-# Generate 6 hooks
-hooks = generate_hooks(6)
+# --------------------------
+# Set API Keys
+# --------------------------
+set_api_key(os.getenv("ELEVENLABS_KEY"))
+
+# --------------------------
+# Step 1: Generate top 6 hooks
+# --------------------------
+hooks = generate_hooks(count=6)
+print("Selected hooks:", hooks)
 
 for i, hook in enumerate(hooks):
-    # Pick style + generate AI video prompt
-    style, video_prompt = pick_style_and_prompt(hook)
+    print(f"\n--- Generating Short {i+1} ---")
     
-    # Generate AI script + voice
-    script = generate_script(hook)
-    audio_file = create_voice(script)
+    # --------------------------
+    # Step 2: Generate script
+    # --------------------------
+    # Here we just use hook as script for simplicity
+    script = hook + " - explained in short video format"
     
-    # Generate AI video based on prompt + combine voice
-    final_video = build_ai_video(video_prompt, audio_file)
+    # --------------------------
+    # Step 3: Generate scene prompts
+    # --------------------------
+    scenes = generate_scenes(script)
+    print("Scene prompts:", scenes)
     
-    # Generate thumbnail
-    create_thumbnail(hook)
+    # --------------------------
+    # Step 4: Generate AI images for scenes
+    # --------------------------
+    images = []
+    for idx, scene in enumerate(scenes):
+        img_path = generate_image(scene, idx)
+        images.append(img_path)
     
-    # Upload video at scheduled time (2-hour intervals)
-    upload_video(final_video, hook, publish_delay_minutes=i*120)
+    # --------------------------
+    # Step 5: Build video
+    # --------------------------
+    video_file = build_video(images)
     
-    print(f"Short {i+1}/6 created: Hook='{hook}', Style='{style}'")
+    # --------------------------
+    # Step 6: Generate AI voice
+    # --------------------------
+    audio_file = f"output/voice_{i}.mp3"
+    voice_audio = generate_voice(text=script, voice="alloy")
+    with open(audio_file, "wb") as f:
+        f.write(voice_audio)
+    
+    # --------------------------
+    # Step 7: Combine video + audio
+    # --------------------------
+    video_clip = CompositeVideoClip([video_file])
+    audio_clip = AudioFileClip(audio_file)
+    final_video = video_clip.set_audio(audio_clip)
+    
+    final_output = f"output/short_{i+1}.mp4"
+    final_video.write_videofile(final_output, fps=24)
+    
+    print(f"Short {i+1} generated:", final_output)
+
+    # --------------------------
+    # Step 8: Add subtitles & thumbnail
+    # --------------------------
+    # (Optional: you can auto-generate subtitles using your AI or ElevenLabs script)
+    # (Optional: thumbnail generation can be added similarly)
+
+    # --------------------------
+    # Step 9: Upload to YouTube
+    # --------------------------
+    # Make sure YOUTUBE_KEY is set and uploader.py is ready
+    # from uploader import upload_video
+    # upload_video(final_output, title=hook)
+    
+print("\nAll 6 Shorts generated successfully!")
