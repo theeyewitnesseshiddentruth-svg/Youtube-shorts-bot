@@ -5,7 +5,7 @@ from image_generator import generate_image
 from video_builder import build_video
 from moviepy.editor import AudioFileClip, CompositeVideoClip, TextClip
 from elevenlabs import generate, set_api_key
-import os
+from uploader import upload_video
 
 # Set API key from GitHub secrets
 set_api_key(os.getenv("ELEVENLABS_KEY"))
@@ -75,9 +75,10 @@ for i, hook in enumerate(hooks):
     final_video = video_clip.set_audio(audio_clip)
     
     final_output = f"output/short_{i+1}.mp4"
-    final_video.write_videofile(final_output, fps=24)
-    
-    print(f"Short {i+1} generated:", final_output)
+    # After building video and adding AI voice
+    video_file = final_output
+
+    upload_video(video_file, title=hook, description="AI Generated Shorts", tags=["shorts"])
 
     # --------------------------
     # Step 8: Add subtitles & thumbnail
