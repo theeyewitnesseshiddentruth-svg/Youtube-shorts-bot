@@ -1,10 +1,10 @@
-import subprocess
 import os
+import subprocess
 
 def build_video_ffmpeg(images, audio_file, output_file, duration_per_image=3, subtitles_file=None):
     """
     Build a video from images + audio using FFmpeg.
-    Optionally adds subtitles.
+    add subtitles.
     
     images: list of image file paths
     audio_file: path to MP3 narration
