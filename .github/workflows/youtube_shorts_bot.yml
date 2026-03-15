@@ -36,4 +36,4 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-        run: python scripts/run_bot.py
+        run: Youtube_shorts_bot/scripts/run_bot.py
