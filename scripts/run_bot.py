@@ -1,10 +1,10 @@
 import os
 import subprocess
-from hooks import generate_hooks
-from scene_generator import generate_scenes
-from image_generator import generate_image
-from video_builder import build_video_ffmpeg
-from uploader import upload_video
+from scripts.hooks import generate_hooks
+from scripts.scene_generator import generate_scenes
+from scripts.image_generator import generate_image
+from scripts.video_builder import build_video_ffmpeg
+from scripts.uploader import upload_video
 from PIL import Image
 from elevenlabs.client import ElevenLabs
 
