@@ -3,6 +3,7 @@ from hooks import generate_hooks
 from scene_generator import generate_scenes
 from image_generator import generate_image
 from video_builder import build_video_ffmpeg
+from elevenlabs import generate, set_api_key
 from uploader import upload_video
 from PIL import Image
 
@@ -13,18 +14,24 @@ OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --------------------------
-# Generate AI voice (placeholder)
+# generate ai voice
 # --------------------------
+
+# Set API key from GitHub secrets
+set_api_key(os.getenv("ELEVENLABS_KEY"))
+
 def generate_ai_voice(text, file_name):
     """
-    Placeholder function for AI narration.
-    Currently creates silent audio.
-    Replace with ElevenLabs or TTS integration if desired.
+    Generate narration audio using ElevenLabs.
+    Saves as MP3.
     """
-    # Create 1-second silent mp3 for placeholder
-    from pydub import AudioSegment
-    silence = AudioSegment.silent(duration=1000)
-    silence.export(file_name, format="mp3")
+    audio_bytes = generate(
+        text=text,
+        voice="alloy",              # Change voice if you want
+        model="eleven_multilingual_v1"
+    )
+    with open(file_name, "wb") as f:
+        f.write(audio_bytes)
     return file_name
 
 # --------------------------
