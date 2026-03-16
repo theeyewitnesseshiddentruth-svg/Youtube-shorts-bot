@@ -4,12 +4,12 @@ from .scene_generator import generate_scenes
 from .image_generator import generate_image
 from .video_builder import build_video_ffmpeg
 from .uploader import upload_video
-from elevenlabs import set_api_key, generate_voice
+from elevenlabs.client import ElevenLabs
 
 # --------------------------
 # Set API keys
 # --------------------------
-set_api_key(os.getenv("ELEVENLABS_KEY"))
+client = ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
 YOUTUBE_KEY = os.getenv("YOUTUBE_KEY")  # used in uploader.py
 
