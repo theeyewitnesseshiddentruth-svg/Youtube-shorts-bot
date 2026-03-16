@@ -1,5 +1,6 @@
 import os
 import requests
+import re
 import random
 
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
