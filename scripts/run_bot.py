@@ -1,4 +1,5 @@
 import os
+import re
 from .hooks import generate_hooks
 from .scene_generator import generate_scenes
 from .image_generator import generate_image
