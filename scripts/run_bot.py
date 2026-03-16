@@ -4,8 +4,6 @@ from scene_generator import generate_scenes
 from image_generator import generate_image
 from video_builder import build_video_ffmpeg
 from elevenlabs import generate, set_api_key
-from uploader import upload_video
-from PIL import Image
 
 # --------------------------
 # Configuration
