@@ -3,3 +3,4 @@ Pillow
 elevenlabs
 google-api-python-client
 google-auth-oauthlib
+ffmpeg-python
