@@ -4,26 +4,27 @@ from scene_generator import generate_scenes
 from image_generator import generate_image
 from video_builder import build_video_ffmpeg
 from uploader import upload_video
-from elevenlabs import generate, set_api_key
 from PIL import Image
-import subprocess
 
 # --------------------------
-# Setup ElevenLabs API key
+# Configuration
 # --------------------------
-set_api_key(os.getenv("ELEVENLABS_KEY"))
+OUTPUT_DIR = "output"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --------------------------
-# Generate AI voice
+# Generate AI voice (placeholder)
 # --------------------------
 def generate_ai_voice(text, file_name):
-    audio_bytes = generate(
-        text=text,
-        voice="alloy",
-        model="eleven_multilingual_v1"
-    )
-    with open(file_name, "wb") as f:
-        f.write(audio_bytes)
+    """
+    Placeholder function for AI narration.
+    Currently creates silent audio.
+    Replace with ElevenLabs or TTS integration if desired.
+    """
+    # Create 1-second silent mp3 for placeholder
+    from pydub import AudioSegment
+    silence = AudioSegment.silent(duration=1000)
+    silence.export(file_name, format="mp3")
     return file_name
 
 # --------------------------
@@ -53,6 +54,7 @@ def generate_thumbnail(image_path, output_thumb, size=(1280, 720)):
 # Burn subtitles onto video
 # --------------------------
 def burn_subtitles(video_file, srt_file, output_file):
+    import subprocess
     cmd = [
         "ffmpeg",
         "-y",
@@ -65,7 +67,7 @@ def burn_subtitles(video_file, srt_file, output_file):
     return output_file
 
 # --------------------------
-# Main bot loop
+# Main workflow
 # --------------------------
 def main():
     hooks = generate_hooks(count=6)
@@ -74,32 +76,40 @@ def main():
     for i, hook in enumerate(hooks):
         print(f"\n--- Generating Short {i+1} ---")
         
+        # Step 1: Script
         script = f"{hook} - explained in short video format"
+
+        # Step 2: Scene prompts
         scenes = generate_scenes(script)
         print("Scene prompts:", scenes)
-        
-        images = [generate_image(scene, idx) for idx, scene in enumerate(scenes)]
-        
-        audio_file = f"output/voice_{i}.mp3"
+
+        # Step 3: Generate images
+        images = []
+        for idx, scene in enumerate(scenes):
+            img_path = generate_image(scene, idx)
+            images.append(img_path)
+
+        # Step 4: Generate voice (placeholder)
+        audio_file = f"{OUTPUT_DIR}/voice_{i}.mp3"
         generate_ai_voice(script, audio_file)
-        
-        # Build video
-        video_file = f"output/short_{i+1}.mp4"
+
+        # Step 5: Build video
+        video_file = f"{OUTPUT_DIR}/short_{i+1}.mp4"
         build_video_ffmpeg(images, audio_file, video_file, duration_per_image=3)
-        
-        # Generate subtitles
-        srt_file = f"output/subs_{i+1}.srt"
+
+        # Step 6: Generate subtitles
+        srt_file = f"{OUTPUT_DIR}/subs_{i+1}.srt"
         generate_subtitles(script, srt_file)
-        
-        # Burn subtitles onto video
-        video_with_subs = f"output/short_{i+1}_sub.mp4"
+
+        # Step 7: Burn subtitles
+        video_with_subs = f"{OUTPUT_DIR}/short_{i+1}_sub.mp4"
         burn_subtitles(video_file, srt_file, video_with_subs)
-        
-        # Generate thumbnail (optional)
-        thumbnail_file = f"output/thumb_{i+1}.png"
+
+        # Step 8: Thumbnail (from first scene)
+        thumbnail_file = f"{OUTPUT_DIR}/thumb_{i+1}.png"
         generate_thumbnail(images[0], thumbnail_file)
-        
-        # Upload video
+
+        # Step 9: Upload video
         upload_video(
             video_with_subs,
             title=hook,
@@ -107,8 +117,11 @@ def main():
             tags=["shorts"],
             thumbnail=thumbnail_file
         )
-    
+
     print("\nAll 6 Shorts generated successfully!")
 
+# --------------------------
+# Entry point
+# --------------------------
 if __name__ == "__main__":
     main()
