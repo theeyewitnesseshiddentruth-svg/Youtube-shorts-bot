@@ -1,6 +1,6 @@
 import os
 import requests
-import json
+import random
 
 # Read API key from environment
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
