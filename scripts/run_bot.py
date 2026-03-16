@@ -9,6 +9,9 @@ from elevenlabs.client import ElevenLabs
 # --------------------------
 # Set API keys
 # --------------------------
+OUTPUT_DIR = "output"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 client = ElevenLabs(api_key=os.getenv("ELEVENLABS_KEY"))
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
 YOUTUBE_KEY = os.getenv("YOUTUBE_KEY")  # used in uploader.py
