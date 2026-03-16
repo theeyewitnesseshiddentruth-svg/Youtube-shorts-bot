@@ -3,35 +3,29 @@ from .hooks import generate_hooks
 from .scene_generator import generate_scenes
 from .image_generator import generate_image
 from .video_builder import build_video_ffmpeg
-from elevenlabs import generate, set_api_key
+from .uploader import upload_video
+from elevenlabs import set_api_key, generate_voice
 
 # --------------------------
-# Configuration
+# Set API keys
 # --------------------------
-OUTPUT_DIR = "output"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+set_api_key(os.getenv("ELEVENLABS_KEY"))
+OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
+YOUTUBE_KEY = os.getenv("YOUTUBE_KEY")  # used in uploader.py
 
 # --------------------------
 # generate ai voice
 # --------------------------
-
-# Set API key from GitHub secrets
-set_api_key(os.getenv("ELEVENLABS_KEY"))
-
 def generate_ai_voice(text, file_name):
-    """
-    Generate narration audio using ElevenLabs.
-    Saves as MP3.
-    """
-    audio_bytes = generate(
+    """Generate MP3 narration for given text using ElevenLabs (new SDK)."""
+    audio_bytes = generate_voice(
         text=text,
-        voice="alloy",              # Change voice if you want
+        voice="alloy",
         model="eleven_multilingual_v1"
     )
     with open(file_name, "wb") as f:
         f.write(audio_bytes)
     return file_name
-
 # --------------------------
 # Generate subtitles (SRT)
 # --------------------------
