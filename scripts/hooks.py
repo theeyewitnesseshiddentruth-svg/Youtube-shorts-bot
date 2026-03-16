@@ -1,18 +1,22 @@
 import os
 import requests
-import random
+import json
 
-# --------------------------
-# OpenRouter setup
-# --------------------------
-OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")  # GitHub secret name
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+# Read API key from environment
+OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 def generate_hooks(count=6):
     """
-    Generate viral YouTube Shorts hooks using OpenRouter.
-    Returns a list of top `count` hooks.
+    Generate top YouTube Shorts hooks using OpenRouter API.
+
+    Args:
+        count (int): Number of hooks to return (top scoring).
+
+    Returns:
+        list[str]: List of hooks.
     """
+    # Prompt to generate 50 viral hooks
     prompt = """
 Generate 50 viral YouTube Shorts hooks.
 Rules:
@@ -31,19 +35,21 @@ Rules:
         "model": "gpt-4o-mini",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.9,
-        "max_tokens": 500
+        "max_tokens": 1000
     }
 
-    response = requests.post(OPENROUTER_URL, json=payload, headers=headers)
+    response = requests.post(API_URL, headers=headers, data=json.dumps(payload))
     response.raise_for_status()
     data = response.json()
 
-    # OpenRouter returns the content in choices[0].message.content
+    # Extract text
     hooks_text = data["choices"][0]["message"]["content"]
-    hooks = [h.strip("- ").strip() for h in hooks_text.split("\n") if len(h.strip()) > 5]
+    hooks_list = [h.strip("- ").strip() for h in hooks_text.split("\n") if len(h.strip()) > 5]
 
-    # Simple scoring: randomly pick top `count` hooks for now
-    random.shuffle(hooks)
-    best_hooks = hooks[:count]
+    # Optional: score hooks (simple random scoring for now)
+    scored = [(hook, min(10, len(hook) // 2 + 5)) for hook in hooks_list]
+    scored.sort(key=lambda x: x[1], reverse=True)
 
-    return best_hooks
+    # Return top `count` hooks
+    top_hooks = [hook for hook, score in scored[:count]]
+    return top_hooks
