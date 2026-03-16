@@ -48,9 +48,14 @@ def generate_hooks(count=6):
     ]
     
     # Optional: score hooks (simple random scoring for now)
-    scored = [(hook, min(10, len(hook) // 2 + 5)) for hook in hooks_list]
+    scored = [(hook, min(10, len(hook) // 2 + 5)) for hook in hooks]
+
     scored.sort(key=lambda x: x[1], reverse=True)
-    
+
+    best_hooks = [hook for hook, score in scored[:count]]
+
+    return best_hooks
+  
     if len(hooks_list) < count:
         return hooks_list
     return random.sample(hooks_list, count)
