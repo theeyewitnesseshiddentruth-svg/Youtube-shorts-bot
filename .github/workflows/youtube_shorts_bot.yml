@@ -2,38 +2,42 @@ name: Youtube Shorts Bot
 
 on:
   schedule:
-    # Run 6 times per day (UTC)
+    # Schedule 6 times per day (UTC)
     - cron: "0 6 * * *"
     - cron: "0 10 * * *"
     - cron: "0 14 * * *"
     - cron: "0 18 * * *"
     - cron: "0 22 * * *"
     - cron: "0 2 * * *"
-  workflow_dispatch:  # optional manual trigger
+  workflow_dispatch:  # Optional manual trigger
 
 jobs:
   generate_shorts:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # Step 3: Install dependencies and FFmpeg
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           sudo apt-get update
           sudo apt-get install -y ffmpeg
+          python -m pip install pydub
 
-      - name: Run bot
+      # Step 4: Run the bot
+      - name: Run Youtube Shorts Bot
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-          ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
+          OPENROUTER_KEY: ${{ secrets.OPENROUTER_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-        run: python -m scripts.run_bot
+        run: python scripts/run_bot.py
