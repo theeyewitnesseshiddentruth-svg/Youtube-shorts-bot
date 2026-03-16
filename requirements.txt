@@ -1,1 +1,5 @@
-
+requests
+Pillow
+elevenlabs
+google-api-python-client
+google-auth-oauthlib
