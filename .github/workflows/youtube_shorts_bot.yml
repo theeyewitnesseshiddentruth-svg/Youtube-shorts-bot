@@ -36,4 +36,4 @@ jobs:
           ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
         run: |
-         python -m scripts/run_bot.py
+         python -m scripts.run_bot
