@@ -40,8 +40,12 @@ def generate_hooks(count=6):
 
     # Extract text from response
     hooks_text = result["choices"][0]["message"]["content"]
-    hooks_list = [h.strip("- ").strip() for h in hooks_text.split("\n") if len(h.strip()) > 5]
-
+    hooks = [
+    re.sub(r'^\d+\.\s*', '', h).strip()
+    for h in hooks_text.split("\n")
+    if len(h.strip()) > 5
+    ]
+    
     # Optional: score hooks (simple random scoring for now)
     scored = [(hook, min(10, len(hook) // 2 + 5)) for hook in hooks_list]
     scored.sort(key=lambda x: x[1], reverse=True)
