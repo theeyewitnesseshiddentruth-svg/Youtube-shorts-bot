@@ -1,8 +1,8 @@
 import os
-from hooks import generate_hooks
-from scene_generator import generate_scenes
-from image_generator import generate_image
-from video_builder import build_video_ffmpeg
+from .hooks import generate_hooks
+from .scene_generator import generate_scenes
+from .image_generator import generate_image
+from .video_builder import build_video_ffmpeg
 from elevenlabs import generate, set_api_key
 
 # --------------------------
