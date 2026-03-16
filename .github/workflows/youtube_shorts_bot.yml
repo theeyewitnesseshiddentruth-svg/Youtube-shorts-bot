@@ -39,5 +39,6 @@ jobs:
       - name: Run Youtube Shorts Bot
         env:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_KEY }}
+          ELEVENLABS_KEY: ${{ secrets.ELEVENLABS_KEY }}
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
-        run: python scripts/run_bot.py
+        run: python -m scripts.run_bot
