@@ -23,7 +23,6 @@ YOUTUBE_KEY = os.getenv("YOUTUBE_KEY")  # used in uploader.py
 def generate_ai_voice(text, file_name):
     audio_stream = client.text_to_speech.convert(
         text=text,
-        voice_id="21m00Tcm4TlvDq8ikWAM",
         model_id="eleven_multilingual_v2"
     )
 
