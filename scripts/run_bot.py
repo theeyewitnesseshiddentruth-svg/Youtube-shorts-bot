@@ -21,14 +21,16 @@ YOUTUBE_KEY = os.getenv("YOUTUBE_KEY")  # used in uploader.py
 # generate ai voice
 # --------------------------
 def generate_ai_voice(text, file_name):
-    """Generate MP3 narration for given text using ElevenLabs (new SDK)."""
-    audio_bytes = generate_voice(
+    audio_stream = client.text_to_speech.convert(
         text=text,
-        voice="alloy",
-        model="eleven_multilingual_v1"
+        voice_id="21m00Tcm4TlvDq8ikWAM",
+        model_id="eleven_multilingual_v2"
     )
+
     with open(file_name, "wb") as f:
-        f.write(audio_bytes)
+        for chunk in audio_stream:
+            f.write(chunk)
+
     return file_name
 # --------------------------
 # Generate subtitles (SRT)
