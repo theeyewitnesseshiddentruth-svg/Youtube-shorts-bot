@@ -56,6 +56,3 @@ def generate_hooks(count=6):
 
     return best_hooks
   
-    if len(hooks_list) < count:
-        return hooks_list
-    return random.sample(hooks_list, count)
