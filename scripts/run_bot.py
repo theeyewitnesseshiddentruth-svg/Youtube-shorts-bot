@@ -5,6 +5,7 @@ from .scene_generator import generate_scenes
 from .image_generator import generate_image
 from .video_builder import build_video_ffmpeg
 from .uploader import upload_video
+from PIL import Image
 from elevenlabs.client import ElevenLabs
 
 # --------------------------
